@@ -220,7 +220,7 @@ function Portfolio() {
       </nav>
 
       {/* HERO */}
-      <section style={{ minHeight:"100vh",position:"relative",display:"flex",alignItems:"center",overflow:"hidden" }}>
+      <section style={{ minHeight:"85vh",position:"relative",display:"flex",alignItems:"center",overflow:"hidden" }}>
         <GridOverlay /><NoiseBg />
         <div style={{ position:"absolute",top:"-20%",right:"-10%",width:600,height:600,background:"radial-gradient(circle,rgba(255,51,102,.15) 0%,transparent 70%)",filter:"blur(80px)",pointerEvents:"none" }} />
         <div style={{ position:"absolute",bottom:"-10%",left:"-10%",width:500,height:500,background:"radial-gradient(circle,rgba(0,229,160,.1) 0%,transparent 70%)",filter:"blur(80px)",pointerEvents:"none" }} />
@@ -387,7 +387,7 @@ function Portfolio() {
           <h2 style={{ fontSize:"clamp(36px,5vw,56px)",fontWeight:900,lineHeight:1.1,marginBottom:20 }}>Ready to <span style={{ background:"linear-gradient(135deg,#FF3366,#FFD600)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent" }}>scale your UA creatives</span>?</h2>
           <p style={{ color:"#888",fontSize:17,lineHeight:1.7,maxWidth:520,margin:"0 auto 48px" }}>Whether you need AI-powered video ads, static creatives, or a full creative strategy {"\u2014"} let's talk about how to level up your ad performance.</p>
           <div style={{ display:"flex",gap:16,justifyContent:"center",flexWrap:"wrap" }}>
-            <a href="mailto:ivodsgs@gmail.com" className="cta-btn cta-primary"><span>{"\u2709"}</span> Email Me</a>
+           <a href="mailto:ivodsgs@gmail.com" className="cta-btn cta-primary">Email Me</a>
             <a href="https://www.linkedin.com/in/ivosilveira/" target="_blank" rel="noopener" className="cta-btn cta-secondary"><span>in</span> LinkedIn</a>
           </div>
           <div style={{ display:"inline-flex",alignItems:"center",gap:10,padding:"12px 24px",borderRadius:40,background:"rgba(0,229,160,.08)",border:"1px solid rgba(0,229,160,.15)",marginTop:48 }}>
