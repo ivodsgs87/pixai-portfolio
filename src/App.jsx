@@ -85,7 +85,7 @@ function ProjectModal({ project, onClose }) {
       position: "fixed", inset: 0, zIndex: 2000,
       background: "rgba(0,0,0,0.85)", backdropFilter: "blur(10px)",
       display: "flex", alignItems: "center", justifyContent: "center",
-      padding: 24, cursor: "pointer",
+      padding: 16, cursor: "pointer",
     }}>
       <div onClick={(e) => e.stopPropagation()} style={{
         background: "#13131A", borderRadius: 20, maxWidth: vertical ? 400 : 800, width: "100%",
@@ -106,13 +106,13 @@ function ProjectModal({ project, onClose }) {
           <img src={project.thumbnailUrl} alt={project.title}
             style={{ width: "100%", display: "block", maxHeight: 400, objectFit: "cover" }} />
         ) : null}
-        <div style={{ padding: "28px 32px 32px" }}>
+        <div style={{ padding: "24px" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 12 }}>
-            <h2 style={{ fontWeight: 800, fontSize: 24, color: "#F0F0F5" }}>{project.title}</h2>
+            <h2 style={{ fontWeight: 800, fontSize: 20, color: "#F0F0F5" }}>{project.title}</h2>
             <span style={{ fontFamily: "'Space Mono', monospace", fontSize: 11, color: project.color, letterSpacing: 1, textTransform: "uppercase", flexShrink: 0, marginLeft: 16 }}>{project.category}</span>
           </div>
           {project.description && (
-            <p style={{ color: "#999", lineHeight: 1.7, fontSize: 15, marginBottom: 16 }}>{project.description}</p>
+            <p style={{ color: "#999", lineHeight: 1.7, fontSize: 14, marginBottom: 16 }}>{project.description}</p>
           )}
           {project.tags?.length > 0 && (
             <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
@@ -139,6 +139,7 @@ function Portfolio() {
   const [selectedProject, setSelectedProject] = useState(null);
   const [visibleSections, setVisibleSections] = useState(new Set());
   const [scrollY, setScrollY] = useState(0);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     try {
@@ -162,14 +163,14 @@ function Portfolio() {
       entries.forEach((entry) => {
         if (entry.isIntersecting) setVisibleSections((prev) => new Set([...prev, entry.target.id]));
       });
-    }, { threshold: 0.15 });
+    }, { threshold: 0.1 });
     document.querySelectorAll("[data-animate]").forEach((el) => observer.observe(el));
     return () => observer.disconnect();
   }, []);
 
   const categories = ["All", ...new Set(projects.map((p) => p.category))];
   const filtered = activeFilter === "All" ? projects : projects.filter((p) => p.category === activeFilter);
-  const scrollTo = (id) => document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+  const scrollTo = (id) => { document.getElementById(id)?.scrollIntoView({ behavior: "smooth" }); setMobileMenuOpen(false); };
   const navItems = ["about", "projects", "services", "contact"];
 
   return (
@@ -201,26 +202,71 @@ function Portfolio() {
         .stat-block{text-align:center;padding:20px}
         .scanline{position:fixed;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(0,229,160,.15),transparent);animation:scanline 8s linear infinite;pointer-events:none;z-index:100}
         .marquee-track{display:flex;animation:marquee 20s linear infinite;width:max-content}
+
+        /* Desktop nav */
+        .desktop-nav{display:flex;gap:32;align-items:center}
+        .hamburger{display:none;background:none;border:none;color:#fff;font-size:24px;cursor:pointer;padding:8px}
+        .mobile-overlay{display:none}
+
+        /* ── RESPONSIVE ── */
+        @media(max-width:768px){
+          .desktop-nav{display:none !important}
+          .hamburger{display:block !important}
+          .mobile-overlay{display:flex !important;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(10,10,15,.98);z-index:950;flex-direction:column;align-items:center;justify-content:center;gap:32px}
+          .mobile-overlay .nav-link{font-size:18px;letter-spacing:4px}
+          .hero-section{min-height:auto !important;padding-top:100px !important}
+          .hero-inner{padding:100px 20px 48px !important}
+          .stats-grid{grid-template-columns:repeat(2,1fr) !important;gap:12px !important;margin-top:40px !important}
+          .about-grid{grid-template-columns:1fr !important;gap:40px !important}
+          .about-section{padding:60px 20px !important}
+          .projects-section{padding:60px 20px !important}
+          .projects-header{flex-direction:column !important;align-items:flex-start !important}
+          .projects-grid{grid-template-columns:1fr !important}
+          .services-section{padding:60px 20px !important}
+          .services-grid{grid-template-columns:1fr !important}
+          .contact-section{padding:60px 20px 48px !important}
+          .cta-btn{padding:14px 28px;font-size:13px}
+          .filter-btn{padding:6px 14px;font-size:11px}
+          .founder-info{flex-direction:column !important;gap:8px !important}
+          .founder-dot{display:none !important}
+          .email-row{flex-direction:column !important;align-items:center !important;gap:12px !important}
+          .copy-btn-wrapper{flex-direction:column !important;align-items:center !important}
+        }
+        @media(max-width:480px){
+          .projects-grid{grid-template-columns:1fr !important;min-width:0 !important}
+          .project-card{min-width:0 !important}
+          .service-card{padding:24px 20px}
+          .tool-pill{padding:6px 12px;font-size:11px}
+        }
       `}</style>
 
       <div className="scanline" />
       <ProjectModal project={selectedProject} onClose={() => setSelectedProject(null)} />
 
+      {/* MOBILE MENU */}
+      {mobileMenuOpen && (
+        <div className="mobile-overlay">
+          <button onClick={() => setMobileMenuOpen(false)} style={{position:"absolute",top:20,right:24,background:"none",border:"none",color:"#fff",fontSize:28,cursor:"pointer"}}>{"\u2715"}</button>
+          {navItems.map((item) => <button key={item} className="nav-link" onClick={() => scrollTo(item)}>{item}</button>)}
+        </div>
+      )}
+
       {/* NAV */}
-      <nav style={{ position:"fixed",top:0,left:0,right:0,zIndex:900,background:scrollY>50?"rgba(10,10,15,0.9)":"transparent",backdropFilter:scrollY>50?"blur(20px)":"none",borderBottom:scrollY>50?"1px solid rgba(255,255,255,0.05)":"none",transition:"all .4s",padding:"0 32px" }}>
+      <nav style={{ position:"fixed",top:0,left:0,right:0,zIndex:900,background:scrollY>50?"rgba(10,10,15,0.9)":"transparent",backdropFilter:scrollY>50?"blur(20px)":"none",borderBottom:scrollY>50?"1px solid rgba(255,255,255,0.05)":"none",transition:"all .4s",padding:"0 20px" }}>
         <div style={{ maxWidth:1200,margin:"0 auto",display:"flex",justifyContent:"space-between",alignItems:"center",height:70 }}>
           <div style={{ display:"flex",alignItems:"center",gap:8,cursor:"pointer" }} onClick={() => window.scrollTo({top:0,behavior:"smooth"})}>
             <div style={{ width:36,height:36,borderRadius:10,background:"linear-gradient(135deg,#FF3366,#B44AFF)",display:"flex",alignItems:"center",justifyContent:"center",fontFamily:"'Space Mono',monospace",fontWeight:700,fontSize:14 }}>P</div>
             <span style={{ fontWeight:800,fontSize:18,letterSpacing:2 }}>PIX<span style={{color:"#00E5A0"}}>AI</span></span>
           </div>
-          <div style={{ display:"flex",gap:32,alignItems:"center" }}>
+          <div className="desktop-nav" style={{ display:"flex",gap:32,alignItems:"center" }}>
             {navItems.map((item) => <button key={item} className="nav-link" onClick={() => scrollTo(item)}>{item}</button>)}
           </div>
+          <button className="hamburger" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>{"\u2630"}</button>
         </div>
       </nav>
 
       {/* HERO */}
-      <section style={{ minHeight:"85vh",position:"relative",display:"flex",alignItems:"center",overflow:"hidden" }}>
+      <section className="hero-section" style={{ minHeight:"85vh",position:"relative",display:"flex",alignItems:"center",overflow:"hidden" }}>
         <GridOverlay /><NoiseBg />
         <div style={{ position:"absolute",top:"-20%",right:"-10%",width:600,height:600,background:"radial-gradient(circle,rgba(255,51,102,.15) 0%,transparent 70%)",filter:"blur(80px)",pointerEvents:"none" }} />
         <div style={{ position:"absolute",bottom:"-10%",left:"-10%",width:500,height:500,background:"radial-gradient(circle,rgba(0,229,160,.1) 0%,transparent 70%)",filter:"blur(80px)",pointerEvents:"none" }} />
@@ -228,27 +274,27 @@ function Portfolio() {
         <div style={{ position:"absolute",inset:0,overflow:"hidden",pointerEvents:"none" }}>
           {[...Array(12)].map((_,i) => <Particle key={i} delay={i*.6} left={8+i*8} size={3+(i%4)*2} color={["#FF3366","#00E5A0","#FFD600","#B44AFF","#00B4FF"][i%5]} />)}
         </div>
-        <div style={{ maxWidth:1200,margin:"0 auto",padding:"140px 32px 80px",position:"relative",zIndex:2,width:"100%" }}>
+        <div className="hero-inner" style={{ maxWidth:1200,margin:"0 auto",padding:"120px 32px 60px",position:"relative",zIndex:2,width:"100%" }}>
           <div style={{ animation:"slideUp .8s ease-out" }}>
-            <div style={{ display:"inline-flex",alignItems:"center",gap:10,padding:"8px 18px",borderRadius:30,background:"rgba(255,255,255,.05)",border:"1px solid rgba(255,255,255,.08)",marginBottom:32 }}>
+            <div style={{ display:"inline-flex",alignItems:"center",gap:10,padding:"8px 18px",borderRadius:30,background:"rgba(255,255,255,.05)",border:"1px solid rgba(255,255,255,.08)",marginBottom:24 }}>
               <span style={{ width:8,height:8,borderRadius:"50%",background:"#00E5A0",animation:"pulse 2s infinite" }} />
               <span style={{ fontFamily:"'Space Mono',monospace",fontSize:12,letterSpacing:2,textTransform:"uppercase",color:"#888" }}>Available for Projects</span>
             </div>
-            <h1 style={{ fontSize:"clamp(48px,8vw,96px)",fontWeight:900,lineHeight:1,letterSpacing:-2,marginBottom:20 }}>
+            <h1 style={{ fontSize:"clamp(48px,8vw,96px)",fontWeight:900,lineHeight:1,letterSpacing:-2,marginBottom:16 }}>
               <span style={{ display:"block" }}>PIX<span style={{ background:"linear-gradient(135deg,#00E5A0,#00B4FF)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent" }}>AI</span></span>
             </h1>
-            <p style={{ fontSize:"clamp(18px,2.5vw,26px)",fontWeight:300,color:"#999",maxWidth:580,lineHeight:1.5,marginBottom:12 }}>UA Ads for Mobile Games & Apps</p>
-            <div style={{ display:"flex",flexWrap:"wrap",gap:16,alignItems:"center",marginBottom:48 }}>
+            <p style={{ fontSize:"clamp(16px,2.5vw,26px)",fontWeight:300,color:"#999",maxWidth:580,lineHeight:1.5,marginBottom:12 }}>UA Ads for Mobile Games & Apps</p>
+            <div className="founder-info" style={{ display:"flex",flexWrap:"wrap",gap:16,alignItems:"center",marginBottom:36 }}>
               <span style={{ fontFamily:"'Space Mono',monospace",fontSize:13,color:"#666",letterSpacing:1 }}>Founded by <span style={{color:"#F0F0F5",fontWeight:700}}>Ivo Silveira</span></span>
-              <span style={{ width:4,height:4,borderRadius:"50%",background:"#333" }} />
+              <span className="founder-dot" style={{ width:4,height:4,borderRadius:"50%",background:"#333" }} />
               <span style={{ fontFamily:"'Space Mono',monospace",fontSize:13,color:"#666",letterSpacing:1 }}>Senior UA Creative Specialist</span>
             </div>
-            <div style={{ display:"flex",gap:16,flexWrap:"wrap" }}>
+            <div style={{ display:"flex",gap:12,flexWrap:"wrap" }}>
               <button className="cta-btn cta-primary" onClick={() => scrollTo("projects")}>View Work <span style={{fontSize:18}}>{"\u2192"}</span></button>
               <button className="cta-btn cta-secondary" onClick={() => scrollTo("contact")}>Get in Touch</button>
             </div>
           </div>
-          <div style={{ display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:24,marginTop:80,paddingTop:40,borderTop:"1px solid rgba(255,255,255,.06)",animation:"slideUp 1s ease-out .3s both" }}>
+          <div className="stats-grid" style={{ display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:24,marginTop:60,paddingTop:32,borderTop:"1px solid rgba(255,255,255,.06)",animation:"slideUp 1s ease-out .3s both" }}>
             {STATS.map((s,i) => (
               <div key={i} className="stat-block">
                 <div style={{ fontSize:"clamp(28px,4vw,42px)",fontWeight:900,letterSpacing:-1,background:`linear-gradient(135deg,${["#FF3366","#00E5A0","#FFD600","#B44AFF"][i]},#fff)`,WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent" }}>{s.value}</div>
@@ -276,12 +322,12 @@ function Portfolio() {
       </div>
 
       {/* ABOUT */}
-      <section id="about" data-animate style={{ padding:"120px 32px",position:"relative" }} className={`section-animate ${visibleSections.has("about")?"visible":""}`}>
+      <section id="about" data-animate className={`about-section section-animate ${visibleSections.has("about")?"visible":""}`} style={{ padding:"100px 32px",position:"relative" }}>
         <div style={{ maxWidth:1200,margin:"0 auto" }}>
-          <div style={{ display:"grid",gridTemplateColumns:"1fr 1fr",gap:80,alignItems:"center" }}>
+          <div className="about-grid" style={{ display:"grid",gridTemplateColumns:"1fr 1fr",gap:80,alignItems:"center" }}>
             <div>
               <span style={{ fontFamily:"'Space Mono',monospace",fontSize:11,letterSpacing:4,textTransform:"uppercase",color:"#FF3366",marginBottom:20,display:"block" }}>About</span>
-              <h2 style={{ fontSize:"clamp(32px,4vw,48px)",fontWeight:800,lineHeight:1.15,marginBottom:24 }}>Where <span style={{color:"#00E5A0"}}>AI Generation</span> meets{" "}<span style={{color:"#FFD600"}}>UA Performance</span></h2>
+              <h2 style={{ fontSize:"clamp(28px,4vw,48px)",fontWeight:800,lineHeight:1.15,marginBottom:24 }}>Where <span style={{color:"#00E5A0"}}>AI Generation</span> meets{" "}<span style={{color:"#FFD600"}}>UA Performance</span></h2>
               <p style={{ color:"#999",lineHeight:1.8,fontSize:16,marginBottom:20 }}>With 5+ years leading UA creative production for mobile games, I've built hundreds of high-performing ad creatives across video, banners, playables, and store assets.</p>
               <p style={{ color:"#999",lineHeight:1.8,fontSize:16,marginBottom:32 }}>Now I'm pushing the boundaries of what's possible by integrating AI generation tools into the creative pipeline, producing more creatives, faster, without compromising quality or performance metrics.</p>
               <div>
@@ -290,7 +336,7 @@ function Portfolio() {
               </div>
             </div>
             <div style={{ position:"relative" }}>
-              <div style={{ background:"linear-gradient(135deg,#13131A,#1A1A25)",borderRadius:24,padding:40,border:"1px solid rgba(255,255,255,.06)",position:"relative",overflow:"hidden" }}>
+              <div style={{ background:"linear-gradient(135deg,#13131A,#1A1A25)",borderRadius:24,padding:"32px 28px",border:"1px solid rgba(255,255,255,.06)",position:"relative",overflow:"hidden" }}>
                 <div style={{ position:"absolute",top:-40,right:-40,width:200,height:200,background:"radial-gradient(circle,rgba(255,51,102,.2) 0%,transparent 70%)",filter:"blur(40px)" }} />
                 <div style={{ position:"relative",zIndex:2 }}>
                   <div style={{ fontFamily:"'Space Mono',monospace",fontSize:12,color:"#00E5A0",marginBottom:24,letterSpacing:2 }}>{"// creative_process.js"}</div>
@@ -300,7 +346,7 @@ function Portfolio() {
                     { step:"03",label:"Professional Polish",desc:"AE, C4D, Blender, Unity, Photoshop" },
                     { step:"04",label:"Performance Optimization",desc:"Test, iterate, scale" },
                   ].map((item,i) => (
-                    <div key={i} style={{ display:"flex",gap:16,alignItems:"flex-start",padding:"16px 0",borderBottom:i<3?"1px solid rgba(255,255,255,.05)":"none" }}>
+                    <div key={i} style={{ display:"flex",gap:16,alignItems:"flex-start",padding:"14px 0",borderBottom:i<3?"1px solid rgba(255,255,255,.05)":"none" }}>
                       <span style={{ fontFamily:"'Space Mono',monospace",fontSize:24,fontWeight:700,lineHeight:1,background:`linear-gradient(135deg,${["#FF3366","#00E5A0","#FFD600","#B44AFF"][i]},#fff)`,WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent" }}>{item.step}</span>
                       <div><div style={{ fontWeight:700,fontSize:15,marginBottom:4 }}>{item.label}</div><div style={{ fontFamily:"'Space Mono',monospace",fontSize:12,color:"#666" }}>{item.desc}</div></div>
                     </div>
@@ -313,25 +359,25 @@ function Portfolio() {
       </section>
 
       {/* PROJECTS */}
-      <section id="projects" data-animate style={{ padding:"120px 32px",position:"relative" }} className={`section-animate ${visibleSections.has("projects")?"visible":""}`}>
+      <section id="projects" data-animate className={`projects-section section-animate ${visibleSections.has("projects")?"visible":""}`} style={{ padding:"100px 32px",position:"relative" }}>
         <div style={{ maxWidth:1200,margin:"0 auto" }}>
-          <div style={{ display:"flex",justifyContent:"space-between",alignItems:"flex-end",flexWrap:"wrap",gap:20,marginBottom:48 }}>
+          <div className="projects-header" style={{ display:"flex",justifyContent:"space-between",alignItems:"flex-end",flexWrap:"wrap",gap:20,marginBottom:48 }}>
             <div>
               <span style={{ fontFamily:"'Space Mono',monospace",fontSize:11,letterSpacing:4,textTransform:"uppercase",color:"#00E5A0",marginBottom:16,display:"block" }}>Selected Work</span>
-              <h2 style={{ fontSize:"clamp(32px,4vw,48px)",fontWeight:800,lineHeight:1.15 }}>Projects</h2>
+              <h2 style={{ fontSize:"clamp(28px,4vw,48px)",fontWeight:800,lineHeight:1.15 }}>Projects</h2>
             </div>
             <div style={{ display:"flex",gap:8,flexWrap:"wrap" }}>
               {categories.map((c) => <button key={c} className={`filter-btn ${activeFilter===c?"active":""}`} onClick={() => setActiveFilter(c)}>{c}</button>)}
             </div>
           </div>
-          <div style={{ display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(340px,1fr))",gap:24 }}>
+          <div className="projects-grid" style={{ display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(340px,1fr))",gap:24 }}>
             {filtered.map((project) => (
               <div key={project.id} className="project-card" onClick={() => setSelectedProject(project)} onMouseEnter={() => setHoveredProject(project.id)} onMouseLeave={() => setHoveredProject(null)}>
                 <div style={{ position:"relative",overflow:"hidden",background:`linear-gradient(135deg,${project.color}15,${project.color}05)` }}>
                   {project.thumbnailUrl ? (
                     <img src={project.thumbnailUrl} alt={project.title} style={{ width:"100%",display:"block",minHeight:150,maxHeight:400,objectFit:"cover" }} />
                   ) : (
-                    <div style={{ height:220,display:"flex",alignItems:"center",justifyContent:"center",flexDirection:"column",gap:12 }}>
+                    <div style={{ height:200,display:"flex",alignItems:"center",justifyContent:"center",flexDirection:"column",gap:12 }}>
                       <div style={{ width:60,height:60,borderRadius:16,border:`2px solid ${project.color}40`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:24,transition:"all .3s",transform:hoveredProject===project.id?"scale(1.1)":"scale(1)" }}>{"\u25B6"}</div>
                       <span style={{ fontFamily:"'Space Mono',monospace",fontSize:11,color:"#666",letterSpacing:2 }}>COMING SOON</span>
                     </div>
@@ -343,10 +389,10 @@ function Portfolio() {
                   )}
                   <div style={{ position:"absolute",bottom:0,left:0,right:0,height:3,background:`linear-gradient(90deg,${project.color},transparent)`,opacity:hoveredProject===project.id?1:.4,transition:"opacity .3s" }} />
                 </div>
-                <div style={{ padding:"20px 24px 24px" }}>
+                <div style={{ padding:"16px 20px 20px" }}>
                   <div style={{ display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:8 }}>
-                    <h3 style={{ fontWeight:700,fontSize:18 }}>{project.title}</h3>
-                    <span style={{ fontFamily:"'Space Mono',monospace",fontSize:11,color:project.color,letterSpacing:1,textTransform:"uppercase" }}>{project.category}</span>
+                    <h3 style={{ fontWeight:700,fontSize:17 }}>{project.title}</h3>
+                    <span style={{ fontFamily:"'Space Mono',monospace",fontSize:10,color:project.color,letterSpacing:1,textTransform:"uppercase",flexShrink:0,marginLeft:8 }}>{project.category}</span>
                   </div>
                   {project.description&&<p style={{ color:"#777",fontSize:13,lineHeight:1.5,marginBottom:10,overflow:"hidden",display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical" }}>{project.description}</p>}
                   <div style={{ display:"flex",gap:6,flexWrap:"wrap" }}>{(project.tags||[]).map((tag) => <span key={tag} className="tag">{tag}</span>)}</div>
@@ -358,13 +404,13 @@ function Portfolio() {
       </section>
 
       {/* SERVICES */}
-      <section id="services" data-animate style={{ padding:"120px 32px",position:"relative" }} className={`section-animate ${visibleSections.has("services")?"visible":""}`}>
+      <section id="services" data-animate className={`services-section section-animate ${visibleSections.has("services")?"visible":""}`} style={{ padding:"100px 32px",position:"relative" }}>
         <div style={{ maxWidth:1200,margin:"0 auto" }}>
-          <div style={{ textAlign:"center",marginBottom:64 }}>
+          <div style={{ textAlign:"center",marginBottom:48 }}>
             <span style={{ fontFamily:"'Space Mono',monospace",fontSize:11,letterSpacing:4,textTransform:"uppercase",color:"#FFD600",marginBottom:16,display:"block" }}>What I Do</span>
-            <h2 style={{ fontSize:"clamp(32px,4vw,48px)",fontWeight:800,lineHeight:1.15 }}>Services</h2>
+            <h2 style={{ fontSize:"clamp(28px,4vw,48px)",fontWeight:800,lineHeight:1.15 }}>Services</h2>
           </div>
-          <div style={{ display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))",gap:24 }}>
+          <div className="services-grid" style={{ display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))",gap:24 }}>
             {SERVICES.map((service,i) => (
               <div key={i} className="service-card">
                 <div style={{ position:"absolute",top:-20,right:-20,width:120,height:120,background:`radial-gradient(circle,${service.accent}15 0%,transparent 70%)`,filter:"blur(30px)" }} />
@@ -381,21 +427,23 @@ function Portfolio() {
       </section>
 
       {/* CONTACT */}
-      <section id="contact" data-animate style={{ padding:"120px 32px 80px",position:"relative" }} className={`section-animate ${visibleSections.has("contact")?"visible":""}`}>
+      <section id="contact" data-animate className={`contact-section section-animate ${visibleSections.has("contact")?"visible":""}`} style={{ padding:"100px 32px 60px",position:"relative" }}>
         <div style={{ maxWidth:800,margin:"0 auto",textAlign:"center" }}>
           <span style={{ fontFamily:"'Space Mono',monospace",fontSize:11,letterSpacing:4,textTransform:"uppercase",color:"#B44AFF",marginBottom:16,display:"block" }}>Let's Work Together</span>
-          <h2 style={{ fontSize:"clamp(36px,5vw,56px)",fontWeight:900,lineHeight:1.1,marginBottom:20 }}>Ready to <span style={{ background:"linear-gradient(135deg,#FF3366,#FFD600)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent" }}>scale your UA creatives</span>?</h2>
-          <p style={{ color:"#888",fontSize:17,lineHeight:1.7,maxWidth:520,margin:"0 auto 48px" }}>Whether you need AI-powered video ads, static creatives, or a full creative strategy {"\u2014"} let's talk about how to level up your ad performance.</p>
-          <div style={{ display:"flex",gap:16,justifyContent:"center",flexWrap:"wrap" }}>
-          <a href="https://mail.google.com/mail/?view=cm&to=ivodsgs@gmail.com" target="_blank" rel="noopener" className="cta-btn cta-primary">Email Me</a>
-<button onClick={() => {navigator.clipboard.writeText("ivodsgs@gmail.com");document.getElementById("copyMsg").style.opacity=1;setTimeout(() => document.getElementById("copyMsg").style.opacity=0,2000)}} style={{background:"none",border:"none",cursor:"pointer",display:"flex",alignItems:"center",gap:8}}>
-  <span style={{fontFamily:"'Space Mono',monospace",fontSize:13,color:"#888",letterSpacing:1}}>ivodsgs@gmail.com</span>
-  <span style={{fontSize:12,color:"#666"}}>📋</span>
-  <span id="copyMsg" style={{fontSize:12,color:"#00E5A0",opacity:0,transition:"opacity .3s"}}>Copied!</span>
-</button>
+          <h2 style={{ fontSize:"clamp(28px,5vw,56px)",fontWeight:900,lineHeight:1.1,marginBottom:20 }}>Ready to <span style={{ background:"linear-gradient(135deg,#FF3366,#FFD600)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent" }}>scale your UA creatives</span>?</h2>
+          <p style={{ color:"#888",fontSize:16,lineHeight:1.7,maxWidth:520,margin:"0 auto 36px" }}>Whether you need AI-powered video ads, static creatives, or a full creative strategy {"\u2014"} let's talk about how to level up your ad performance.</p>
+          <div className="email-row" style={{ display:"flex",gap:16,justifyContent:"center",flexWrap:"wrap",alignItems:"center" }}>
+            <a href="https://mail.google.com/mail/?view=cm&to=ivodsgs@gmail.com" target="_blank" rel="noopener" className="cta-btn cta-primary">Email Me</a>
             <a href="https://www.linkedin.com/in/ivosilveira/" target="_blank" rel="noopener" className="cta-btn cta-secondary"><span>in</span> LinkedIn</a>
           </div>
-          <div style={{ display:"inline-flex",alignItems:"center",gap:10,padding:"12px 24px",borderRadius:40,background:"rgba(0,229,160,.08)",border:"1px solid rgba(0,229,160,.15)",marginTop:48 }}>
+          <div className="copy-btn-wrapper" style={{display:"flex",justifyContent:"center",marginTop:20}}>
+            <button onClick={() => {navigator.clipboard.writeText("ivodsgs@gmail.com");document.getElementById("copyMsg").style.opacity=1;setTimeout(() => document.getElementById("copyMsg").style.opacity=0,2000)}} style={{background:"none",border:"none",cursor:"pointer",display:"flex",alignItems:"center",gap:8}}>
+              <span style={{fontFamily:"'Space Mono',monospace",fontSize:13,color:"#888",letterSpacing:1}}>ivodsgs@gmail.com</span>
+              <span style={{fontSize:12,color:"#666"}}>{"\uD83D\uDCCB"}</span>
+              <span id="copyMsg" style={{fontSize:12,color:"#00E5A0",opacity:0,transition:"opacity .3s"}}>Copied!</span>
+            </button>
+          </div>
+          <div style={{ display:"inline-flex",alignItems:"center",gap:10,padding:"12px 24px",borderRadius:40,background:"rgba(0,229,160,.08)",border:"1px solid rgba(0,229,160,.15)",marginTop:32 }}>
             <span style={{ width:8,height:8,borderRadius:"50%",background:"#00E5A0",animation:"pulse 2s infinite" }} />
             <span style={{ fontFamily:"'Space Mono',monospace",fontSize:12,color:"#00E5A0",letterSpacing:1 }}>Currently accepting new clients</span>
           </div>
@@ -403,7 +451,7 @@ function Portfolio() {
       </section>
 
       {/* FOOTER */}
-      <footer style={{ padding:"32px",borderTop:"1px solid rgba(255,255,255,.05)",textAlign:"center" }}>
+      <footer style={{ padding:"24px 20px",borderTop:"1px solid rgba(255,255,255,.05)",textAlign:"center" }}>
         <div style={{ display:"flex",justifyContent:"center",alignItems:"center",gap:8 }}>
           <div style={{ width:24,height:24,borderRadius:6,background:"linear-gradient(135deg,#FF3366,#B44AFF)",display:"flex",alignItems:"center",justifyContent:"center",fontFamily:"'Space Mono',monospace",fontWeight:700,fontSize:10 }}>P</div>
           <span style={{ fontWeight:700,fontSize:14,letterSpacing:2 }}>PIX<span style={{color:"#00E5A0"}}>AI</span></span>
