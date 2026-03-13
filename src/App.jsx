@@ -13,10 +13,10 @@ const FALLBACK_PROJECTS = [
 ];
 
 const SERVICES = [
-  { icon: "🎬", title: "Video Ads", subtitle: "UGC, AI-Generated & Motion", desc: "High-performing video creatives powered by AI generation tools like Google Veo, combined with professional motion design in After Effects and Cinema 4D.", accent: "#FF3366" },
-  { icon: "🖼️", title: "Banners & Static Creatives", subtitle: "Scroll-stopping visuals", desc: "Eye-catching banner ads and static creatives optimized for CTR across ad networks. From concept to final delivery, built for performance.", accent: "#00E5A0" },
-  { icon: "📱", title: "Store Assets", subtitle: "Screenshots & Icons", desc: "App store screenshots, icons, and feature graphics designed to maximize conversion rates and stand out in crowded marketplaces.", accent: "#FFD600" },
-  { icon: "🧠", title: "Creative Strategy & Ideation", subtitle: "Data-driven creative thinking", desc: "Strategic ad concepting, creative testing frameworks, and scalable production pipelines. 5+ years of UA performance insights informing every decision.", accent: "#B44AFF" },
+  { icon: "\uD83C\uDFAC", title: "Video Ads", subtitle: "UGC, AI-Generated & Motion", desc: "High-performing video creatives powered by AI generation tools like Google Veo, combined with professional motion design in After Effects and Cinema 4D.", accent: "#FF3366" },
+  { icon: "\uD83D\uDDBC\uFE0F", title: "Banners & Static Creatives", subtitle: "Scroll-stopping visuals", desc: "Eye-catching banner ads and static creatives optimized for CTR across ad networks. From concept to final delivery, built for performance.", accent: "#00E5A0" },
+  { icon: "\uD83D\uDCF1", title: "Store Assets", subtitle: "Screenshots & Icons", desc: "App store screenshots, icons, and feature graphics designed to maximize conversion rates and stand out in crowded marketplaces.", accent: "#FFD600" },
+  { icon: "\uD83E\uDDE0", title: "Creative Strategy & Ideation", subtitle: "Data-driven creative thinking", desc: "Strategic ad concepting, creative testing frameworks, and scalable production pipelines. 5+ years of UA performance insights informing every decision.", accent: "#B44AFF" },
 ];
 
 const TOOLS = [
@@ -33,11 +33,11 @@ const STATS = [
 
 function getEmbedUrl(url) {
   if (!url) return null;
- let match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/shorts\/)([^&?/]+)/);
+  let match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/shorts\/)([^&?/]+)/);
   if (match) return `https://www.youtube.com/embed/${match[1]}`;
   match = url.match(/vimeo\.com\/(\d+)/);
   if (match) return `https://player.vimeo.com/video/${match[1]}`;
- return null;
+  return null;
 }
 
 function isVerticalVideo(url) {
@@ -77,7 +77,7 @@ function NoiseBg() {
 }
 
 function ProjectModal({ project, onClose }) {
-if (!project) return null;
+  if (!project) return null;
   const embedUrl = getEmbedUrl(project.videoUrl);
   const vertical = isVerticalVideo(project.videoUrl);
   return (
@@ -244,7 +244,7 @@ function Portfolio() {
               <span style={{ fontFamily:"'Space Mono',monospace",fontSize:13,color:"#666",letterSpacing:1 }}>Senior UA Creative Specialist</span>
             </div>
             <div style={{ display:"flex",gap:16,flexWrap:"wrap" }}>
-              <button className="cta-btn cta-primary" onClick={() => scrollTo("projects")}>View Work <span style={{fontSize:18}}>→</span></button>
+              <button className="cta-btn cta-primary" onClick={() => scrollTo("projects")}>View Work <span style={{fontSize:18}}>{"\u2192"}</span></button>
               <button className="cta-btn cta-secondary" onClick={() => scrollTo("contact")}>Get in Touch</button>
             </div>
           </div>
@@ -327,16 +327,18 @@ function Portfolio() {
           <div style={{ display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(340px,1fr))",gap:24 }}>
             {filtered.map((project) => (
               <div key={project.id} className="project-card" onClick={() => setSelectedProject(project)} onMouseEnter={() => setHoveredProject(project.id)} onMouseLeave={() => setHoveredProject(null)}>
-                <div style={{ height:220,position:"relative",overflow:"hidden",background:project.thumbnailUrl?`url(${project.thumbnailUrl}) center/cover`:`linear-gradient(135deg,${project.color}15,${project.color}05)` }}>
-                  {(project.videoUrl||project.mediaType==="video")&&project.thumbnailUrl&&(
-                    <div style={{ position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"center",background:"rgba(0,0,0,.3)",opacity:hoveredProject===project.id?1:.6,transition:"opacity .3s" }}>
-                      <div style={{ width:56,height:56,borderRadius:"50%",background:"rgba(255,255,255,.15)",backdropFilter:"blur(8px)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:22,transition:"all .3s",transform:hoveredProject===project.id?"scale(1.15)":"scale(1)" }}>▶</div>
+                <div style={{ position:"relative",overflow:"hidden",background:`linear-gradient(135deg,${project.color}15,${project.color}05)` }}>
+                  {project.thumbnailUrl ? (
+                    <img src={project.thumbnailUrl} alt={project.title} style={{ width:"100%",display:"block",minHeight:150,maxHeight:400,objectFit:"cover" }} />
+                  ) : (
+                    <div style={{ height:220,display:"flex",alignItems:"center",justifyContent:"center",flexDirection:"column",gap:12 }}>
+                      <div style={{ width:60,height:60,borderRadius:16,border:`2px solid ${project.color}40`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:24,transition:"all .3s",transform:hoveredProject===project.id?"scale(1.1)":"scale(1)" }}>{"\u25B6"}</div>
+                      <span style={{ fontFamily:"'Space Mono',monospace",fontSize:11,color:"#666",letterSpacing:2 }}>COMING SOON</span>
                     </div>
                   )}
-                  {!project.thumbnailUrl&&(
-                    <div style={{ position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"center",flexDirection:"column",gap:12 }}>
-                      <div style={{ width:60,height:60,borderRadius:16,border:`2px solid ${project.color}40`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:24,transition:"all .3s",transform:hoveredProject===project.id?"scale(1.1)":"scale(1)" }}>▶</div>
-                      <span style={{ fontFamily:"'Space Mono',monospace",fontSize:11,color:"#666",letterSpacing:2 }}>COMING SOON</span>
+                  {(project.videoUrl||project.mediaType==="video")&&project.thumbnailUrl&&(
+                    <div style={{ position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"center",background:"rgba(0,0,0,.3)",opacity:hoveredProject===project.id?1:.6,transition:"opacity .3s" }}>
+                      <div style={{ width:56,height:56,borderRadius:"50%",background:"rgba(255,255,255,.15)",backdropFilter:"blur(8px)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:22,transition:"all .3s",transform:hoveredProject===project.id?"scale(1.15)":"scale(1)" }}>{"\u25B6"}</div>
                     </div>
                   )}
                   <div style={{ position:"absolute",bottom:0,left:0,right:0,height:3,background:`linear-gradient(90deg,${project.color},transparent)`,opacity:hoveredProject===project.id?1:.4,transition:"opacity .3s" }} />
@@ -383,9 +385,9 @@ function Portfolio() {
         <div style={{ maxWidth:800,margin:"0 auto",textAlign:"center" }}>
           <span style={{ fontFamily:"'Space Mono',monospace",fontSize:11,letterSpacing:4,textTransform:"uppercase",color:"#B44AFF",marginBottom:16,display:"block" }}>Let's Work Together</span>
           <h2 style={{ fontSize:"clamp(36px,5vw,56px)",fontWeight:900,lineHeight:1.1,marginBottom:20 }}>Ready to <span style={{ background:"linear-gradient(135deg,#FF3366,#FFD600)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent" }}>scale your UA creatives</span>?</h2>
-          <p style={{ color:"#888",fontSize:17,lineHeight:1.7,maxWidth:520,margin:"0 auto 48px" }}>Whether you need AI-powered video ads, static creatives, or a full creative strategy — let's talk about how to level up your ad performance.</p>
+          <p style={{ color:"#888",fontSize:17,lineHeight:1.7,maxWidth:520,margin:"0 auto 48px" }}>Whether you need AI-powered video ads, static creatives, or a full creative strategy {"\u2014"} let's talk about how to level up your ad performance.</p>
           <div style={{ display:"flex",gap:16,justifyContent:"center",flexWrap:"wrap" }}>
-            <a href="mailto:ivodsgs@gmail.com" className="cta-btn cta-primary"><span>✉</span> Email Me</a>
+            <a href="mailto:ivodsgs@gmail.com" className="cta-btn cta-primary"><span>{"\u2709"}</span> Email Me</a>
             <a href="https://www.linkedin.com/in/ivosilveira/" target="_blank" rel="noopener" className="cta-btn cta-secondary"><span>in</span> LinkedIn</a>
           </div>
           <div style={{ display:"inline-flex",alignItems:"center",gap:10,padding:"12px 24px",borderRadius:40,background:"rgba(0,229,160,.08)",border:"1px solid rgba(0,229,160,.15)",marginTop:48 }}>
@@ -401,7 +403,7 @@ function Portfolio() {
           <div style={{ width:24,height:24,borderRadius:6,background:"linear-gradient(135deg,#FF3366,#B44AFF)",display:"flex",alignItems:"center",justifyContent:"center",fontFamily:"'Space Mono',monospace",fontWeight:700,fontSize:10 }}>P</div>
           <span style={{ fontWeight:700,fontSize:14,letterSpacing:2 }}>PIX<span style={{color:"#00E5A0"}}>AI</span></span>
         </div>
-        <p style={{ fontFamily:"'Space Mono',monospace",fontSize:11,color:"#444",letterSpacing:1,marginTop:12 }}>© 2026 PixAI — Ivo Silveira. All rights reserved.</p>
+        <p style={{ fontFamily:"'Space Mono',monospace",fontSize:11,color:"#444",letterSpacing:1,marginTop:12 }}>{"\u00A9"} 2026 PixAI {"\u2014"} Ivo Silveira. All rights reserved.</p>
       </footer>
     </div>
   );
