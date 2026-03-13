@@ -387,7 +387,12 @@ function Portfolio() {
           <h2 style={{ fontSize:"clamp(36px,5vw,56px)",fontWeight:900,lineHeight:1.1,marginBottom:20 }}>Ready to <span style={{ background:"linear-gradient(135deg,#FF3366,#FFD600)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent" }}>scale your UA creatives</span>?</h2>
           <p style={{ color:"#888",fontSize:17,lineHeight:1.7,maxWidth:520,margin:"0 auto 48px" }}>Whether you need AI-powered video ads, static creatives, or a full creative strategy {"\u2014"} let's talk about how to level up your ad performance.</p>
           <div style={{ display:"flex",gap:16,justifyContent:"center",flexWrap:"wrap" }}>
-           <a href="mailto:ivodsgs@gmail.com" className="cta-btn cta-primary">Email Me</a>
+          <a href="https://mail.google.com/mail/?view=cm&to=ivodsgs@gmail.com" target="_blank" rel="noopener" className="cta-btn cta-primary">Email Me</a>
+<button onClick={() => {navigator.clipboard.writeText("ivodsgs@gmail.com");document.getElementById("copyMsg").style.opacity=1;setTimeout(() => document.getElementById("copyMsg").style.opacity=0,2000)}} style={{background:"none",border:"none",cursor:"pointer",display:"flex",alignItems:"center",gap:8}}>
+  <span style={{fontFamily:"'Space Mono',monospace",fontSize:13,color:"#888",letterSpacing:1}}>ivodsgs@gmail.com</span>
+  <span style={{fontSize:12,color:"#666"}}>📋</span>
+  <span id="copyMsg" style={{fontSize:12,color:"#00E5A0",opacity:0,transition:"opacity .3s"}}>Copied!</span>
+</button>
             <a href="https://www.linkedin.com/in/ivosilveira/" target="_blank" rel="noopener" className="cta-btn cta-secondary"><span>in</span> LinkedIn</a>
           </div>
           <div style={{ display:"inline-flex",alignItems:"center",gap:10,padding:"12px 24px",borderRadius:40,background:"rgba(0,229,160,.08)",border:"1px solid rgba(0,229,160,.15)",marginTop:48 }}>
